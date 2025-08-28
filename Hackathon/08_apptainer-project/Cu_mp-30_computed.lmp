@@ -1,0 +1,35 @@
+# Cu bulk
+
+
+units          metal
+dimension      3
+boundary       p p p
+atom_style     atomic
+
+
+read_data      Cu_fcc_unit.data
+replicate      10 10 10
+
+
+velocity       all create 1200.00 42 rot yes mom yes dist gaussian
+fix            ensemble all npt temp 1000.00 2000.00 0.100 iso 1.00 1.00 0.100 tchain 1
+
+pair_style     morse 4.5
+pair_coeff * * 0.3429 1.3588 2.866 4.5
+
+timestep       0.001
+
+dump           dumpATOM all atom 2000 Cu_10-10-10-melting.dump
+
+# Compute per-atom potential energy
+compute         pe_atom all pe/atom
+
+# Dump per-atom potential energy
+dump            1 all custom 2000 dump.pe id type x y z c_pe_atom
+
+
+thermo_style   one
+thermo         2000
+
+run            2000000
+
